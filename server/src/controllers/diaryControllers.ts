@@ -12,22 +12,31 @@ export const getDiaries = asyncHandler(
     // Get the logged-in user's ID from req.user (assumed that authentication middleware is used)
     const userId = req.user._id;
 
-    // Cast req.query to a compatible type and pass the user ID to the query filter
-    const apiFeatures = new ApiFeatures(
-      Diary.find({ user: userId }), // Filter diaries by the logged-in user's ID
+    // Initialize query with the logged-in user's ID filter
+    const baseQuery = Diary.find({ user: userId });
+
+    // Create an instance of ApiFeatures with the base query and query parameters
+    const apiFeaturesForFilter = new ApiFeatures(
+      baseQuery,
       req.query as Record<string, string | string[] | undefined>
-    )
-      .filter()
-      .sort()
-      .paginate();
+    ).filter(); // Apply filtering
 
-    // Execute query
-    const diaries = await apiFeatures.query;
+    // Get the total count of diaries with applied filters
+    const filteredDiariesCount = await apiFeaturesForFilter.query
+      .clone()
+      .countDocuments();
 
+    // Apply sorting and pagination
+    const apiFeaturesWithPagination = apiFeaturesForFilter.sort().paginate();
+
+    // Execute the final query with all features applied
+    const diaries = await apiFeaturesWithPagination.query;
+
+    // Respond with the filtered count and paginated data
     res.status(200).json({
       success: true,
-      count: diaries.length,
-      data: diaries,
+      count: filteredDiariesCount, // Total diaries after applying filters
+      data: diaries, // Paginated diaries
     });
   }
 );
@@ -68,7 +77,7 @@ export const createDiary = asyncHandler(
       walkTime,
       stressLevel,
     } = req.body;
-
+    console.log(req.body, req.user._id);
     const diary = new Diary({
       user: req.user._id, // Assuming req.user is populated by auth middleware
       date,

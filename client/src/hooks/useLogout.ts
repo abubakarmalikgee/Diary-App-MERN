@@ -12,7 +12,7 @@ export const useLogout = () => {
     localStorage.removeItem("authUser");
 
     // Optionally, handle backend logout (e.g., token invalidation)
-    fetch("/api/v1/auth/logout", { method: "POST" }).catch((err) => {
+    fetch("/api/v1/user/logout", { method: "POST" }).catch((err) => {
       console.error("Failed to log out from the backend:", err);
       toast.error("Failed to logout");
     });

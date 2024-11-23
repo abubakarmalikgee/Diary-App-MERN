@@ -8,6 +8,7 @@ interface AuthUser {
   lastname: string;
   email: string;
   role: string; // e.g., 'user', 'admin', etc.
+  since: Date;
 }
 
 // Define the context type
@@ -43,7 +44,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           credentials: "include", // Send cookies with the request if needed
         });
 
-        
         if (response.ok) {
           const user = await response.json();
           setAuthUser(user.data); // Update context with fetched user

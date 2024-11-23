@@ -17,14 +17,13 @@ import { useAuthContext } from "./hooks/useAuthContext";
 
 function App() {
   const { authUser } = useAuthContext();
-  console.log(authUser)
 
   return (
     <main
-      className="flex flex-col min-h-screen w-full overflow-hidden bg-cover bg-center"
-      style={{
-        backgroundImage: `url('/login-bg.jpg')`,
-      }}
+      className="relative flex flex-col min-h-screen w-full overflow-hidden bg-cover bg-center top-0 before:bg-[url('/login-bg.jpg')] before:bg-cover before:bg-center before:bg-no-repeat before:fixed before:top-0 before:left-0 before:w-full before:h-screen before:-z-10"
+      // style={{
+      //   backgroundImage: `url('/login-bg.jpg')`,
+      // }}
     >
       <Router>
         <Navbar />

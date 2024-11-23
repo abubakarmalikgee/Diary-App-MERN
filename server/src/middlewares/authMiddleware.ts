@@ -18,6 +18,10 @@ export const isAuthenticatedUser = async (
     // Decode the token
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
 
+    if (!decoded) {
+      new ErrorHandler("Invalid token, Unauthorized access", 401);
+    }
+
     // Attach the user to the request object
     req.user = await User.findById(decoded.id);
 

@@ -7,6 +7,7 @@ interface UserProfile {
   lastname: string;
   email: string;
   role: string;
+  since: Date;
 }
 
 export const useGetProfile = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import { postDiary } from "../features/diarySlice";
@@ -7,7 +7,7 @@ const DiaryForm: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { loading, error } = useSelector((state: RootState) => state.diary);
 
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState<Date | null>(new Date());
   const [caloriesIntake, setCaloriesIntake] = useState<number | "">(0);
   const [energyLevel, setEnergyLevel] = useState<number | "">("");
   const [vitaminsTaken, setVitaminsTaken] = useState(false);
@@ -20,15 +20,6 @@ const DiaryForm: React.FC = () => {
   const [stressLevel, setStressLevel] = useState<number | "">("");
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  useEffect(() => {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0"); // Adds leading zero if day is a single digit
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
-    const year = today.getFullYear();
-    const formattedDate = `${day}-${month}-${year}`;
-    setDate(formattedDate);
-  }, []);
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
@@ -53,11 +44,11 @@ const DiaryForm: React.FC = () => {
     }
 
     const diary = {
-      date,
+      date: date ? date : new Date(), // Default to current date if null
       caloriesIntake,
       energyLevel,
       vitaminsTaken,
-      mood,
+      mood: mood.toLowerCase(),
       exerciseTime,
       sleepQuality,
       waterIntake,
@@ -76,6 +67,13 @@ const DiaryForm: React.FC = () => {
     return parsedValue > 0 ? parsedValue : "";
   };
 
+  const formatDateInput = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <div
       className="grow w-full flex justify-center items-center py-14 bg-cover bg-center placeholder:text-gray-600"
@@ -87,8 +85,19 @@ const DiaryForm: React.FC = () => {
         <h2 className="text-center text-3xl font-bold text-white mb-6">
           New Diary Entry
         </h2>
-        <p className="text-center text-white mb-4">Date: {date}</p>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Date Picker */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text text-white">Date</span>
+            </label>
+            <input
+              type="date"
+              value={date ? formatDateInput(date) : ""}
+              onChange={(e) => setDate(new Date(e.target.value))}
+              className="input input-bordered w-full bg-white bg-opacity-50 text-gray-800 placeholder:text-gray-600"
+            />
+          </div>
           {/* First Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-center ">
             {/* Calories Intake */}
@@ -308,143 +317,3 @@ const DiaryForm: React.FC = () => {
 };
 
 export default DiaryForm;
-
-// import { useDispatch, useSelector } from "react-redux";
-// import { useState } from "react";
-// import { postDiary } from "../features/diarySlice";
-// import { RootState } from "../store/store"; // Adjust based on your store file location
-
-// const DiaryForm = () => {
-//   const dispatch = useDispatch();
-//   const { loading, error } = useSelector((state: RootState) => state.diaries);
-
-//   // State for form fields
-//   const [diary, setDiary] = useState({
-//     caloriesIntake: "",
-//     energyLevel: "",
-//     vitaminsTaken: false,
-//     mood: "",
-//     exerciseTime: "",
-//     sleepQuality: "",
-//     waterIntake: "",
-//     notes: "",
-//     walkTime: "",
-//     stressLevel: "",
-//   });
-
-//   // Handle form input changes
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value, type, checked } = e.target;
-//     setDiary({
-//       ...diary,
-//       [name]: type === "checkbox" ? checked : value,
-//     });
-//   };
-
-//   // Handle form submit
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     // Post the new diary entry
-//     dispatch(postDiary(diary));
-//   };
-
-//   return (
-//     <div className="max-w-lg mx-auto">
-//       <h2 className="text-xl font-semibold mb-4">Create New Diary</h2>
-//       <form onSubmit={handleSubmit} className="space-y-4">
-//         <input
-//           type="number"
-//           name="caloriesIntake"
-//           value={diary.caloriesIntake}
-//           onChange={handleInputChange}
-//           placeholder="Calories Intake"
-//           className="w-full p-2 border rounded"
-//         />
-//         <input
-//           type="number"
-//           name="energyLevel"
-//           value={diary.energyLevel}
-//           onChange={handleInputChange}
-//           placeholder="Energy Level"
-//           className="w-full p-2 border rounded"
-//         />
-//         <input
-//           type="checkbox"
-//           name="vitaminsTaken"
-//           checked={diary.vitaminsTaken}
-//           onChange={handleInputChange}
-//           className="mr-2"
-//         />
-//         <label>Vitamins Taken</label>
-//         <input
-//           type="text"
-//           name="mood"
-//           value={diary.mood}
-//           onChange={handleInputChange}
-//           placeholder="Mood"
-//           className="w-full p-2 border rounded"
-//         />
-//         <input
-//           type="number"
-//           name="exerciseTime"
-//           value={diary.exerciseTime}
-//           onChange={handleInputChange}
-//           placeholder="Exercise Time (minutes)"
-//           className="w-full p-2 border rounded"
-//         />
-//         <input
-//           type="number"
-//           name="sleepQuality"
-//           value={diary.sleepQuality}
-//           onChange={handleInputChange}
-//           placeholder="Sleep Quality"
-//           className="w-full p-2 border rounded"
-//         />
-//         <input
-//           type="number"
-//           name="waterIntake"
-//           value={diary.waterIntake}
-//           onChange={handleInputChange}
-//           placeholder="Water Intake (liters)"
-//           className="w-full p-2 border rounded"
-//         />
-//         <textarea
-//           name="notes"
-//           value={diary.notes}
-//           onChange={handleInputChange}
-//           placeholder="Notes"
-//           className="w-full p-2 border rounded"
-//         />
-//         <input
-//           type="number"
-//           name="walkTime"
-//           value={diary.walkTime}
-//           onChange={handleInputChange}
-//           placeholder="Walk Time (minutes)"
-//           className="w-full p-2 border rounded"
-//         />
-//         <input
-//           type="number"
-//           name="stressLevel"
-//           value={diary.stressLevel}
-//           onChange={handleInputChange}
-//           placeholder="Stress Level"
-//           className="w-full p-2 border rounded"
-//         />
-
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="w-full p-2 bg-blue-500 text-white rounded"
-//         >
-//           {loading ? "Saving..." : "Save Diary"}
-//         </button>
-
-//         {error && <p className="text-red-500">{error}</p>}
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default DiaryForm;
