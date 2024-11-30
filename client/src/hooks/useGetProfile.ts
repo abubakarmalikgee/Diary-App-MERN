@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface UserProfile {
   id: string;
   firstname: string;
@@ -20,7 +22,7 @@ export const useGetProfile = () => {
       setLoading(true);
       setError(null); // Reset error before fetching data
       try {
-        const response = await axios.get("/api/v1/user/me");
+        const response = await axios.get(`${baseUrl}/api/v1/user/me`);
         setProfile(response.data.data);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {

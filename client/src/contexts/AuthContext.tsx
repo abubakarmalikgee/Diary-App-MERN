@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 // Define the shape of the authenticated user
 interface AuthUser {
@@ -48,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       try {
         // Call your server to verify the current user
-        const response = await fetch("/api/v1/user/me", {
+        const response = await fetch(`${baseUrl}/api/v1/user/me`, {
           method: "GET",
           credentials: "include", // Send cookies with the request if needed
         });

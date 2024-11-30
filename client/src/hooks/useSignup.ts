@@ -2,6 +2,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface SignupCredentials {
   firstname: string;
   lastname: string;
@@ -19,7 +21,7 @@ export const useSignup = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/v1/user/register", {
+      const response = await fetch(`${baseUrl}/api/v1/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useAuthContext } from "./useAuthContext";
 import toast from "react-hot-toast";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -17,7 +19,7 @@ export const useLogin = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/v1/user/login", {
+      const response = await fetch(`${baseUrl}/api/v1/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

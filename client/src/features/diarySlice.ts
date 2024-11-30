@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface Diary {
   _id: string;
   date: Date;
@@ -60,7 +62,9 @@ export const fetchDiaries = createAsyncThunk(
       ...validFilters, // Only include valid filters
     });
 
-    const response = await fetch(`/api/v1/diary/all?${params.toString()}`);
+    const response = await fetch(
+      `${baseUrl}/api/v1/diary/all?${params.toString()}`
+    );
     if (!response.ok) {
       throw new Error("Failed to fetch diaries");
     }
@@ -73,7 +77,7 @@ export const fetchDiaries = createAsyncThunk(
 export const postDiary = createAsyncThunk(
   "diaries/postDiary",
   async (newDiary: Omit<Diary, "_id">) => {
-    const response = await fetch("/api/v1/diary/new", {
+    const response = await fetch(`${baseUrl}/api/v1/diary/new`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -93,7 +97,7 @@ export const updateDiary = createAsyncThunk(
   "diaries/updateDiary",
   async (updatedDiary: Diary) => {
     console.log(updateDiary);
-    const response = await fetch(`/api/v1/diary/${updatedDiary._id}`, {
+    const response = await fetch(`${baseUrl}/api/v1/diary/${updatedDiary._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -113,7 +117,7 @@ export const updateDiary = createAsyncThunk(
 export const deleteDiary = createAsyncThunk(
   "diaries/deleteDiary",
   async (id: string) => {
-    const response = await fetch(`/api/v1/diary/${id}`, {
+    const response = await fetch(`${baseUrl}/api/v1/diary/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {
