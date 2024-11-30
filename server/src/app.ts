@@ -20,7 +20,7 @@ app.use(helmet()); // Basic security headers
 
 app.use(
   cors({
-    origin: "https://diary-app-one.vercel.app/",
+    origin: "https://diary-app-one.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
