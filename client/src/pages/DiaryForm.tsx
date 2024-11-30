@@ -8,16 +8,16 @@ const DiaryForm: React.FC = () => {
   const { loading, error } = useSelector((state: RootState) => state.diary);
 
   const [date, setDate] = useState<Date | null>(new Date());
-  const [caloriesIntake, setCaloriesIntake] = useState<number | "">(0);
-  const [energyLevel, setEnergyLevel] = useState<number | "">("");
+  const [caloriesIntake, setCaloriesIntake] = useState<number>(0);
+  const [energyLevel, setEnergyLevel] = useState<number>(0);
   const [vitaminsTaken, setVitaminsTaken] = useState(false);
   const [mood, setMood] = useState("");
-  const [exerciseTime, setExerciseTime] = useState<number | "">("");
-  const [sleepQuality, setSleepQuality] = useState<number | "">("");
-  const [waterIntake, setWaterIntake] = useState<number | "">("");
+  const [exerciseTime, setExerciseTime] = useState<number>(0);
+  const [sleepQuality, setSleepQuality] = useState<number>(0);
+  const [waterIntake, setWaterIntake] = useState<number>(0);
   const [notes, setNotes] = useState("");
-  const [walkTime, setWalkTime] = useState<number | "">("");
-  const [stressLevel, setStressLevel] = useState<number | "">("");
+  const [walkTime, setWalkTime] = useState<number>(0);
+  const [stressLevel, setStressLevel] = useState<number>(0);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -64,7 +64,7 @@ const DiaryForm: React.FC = () => {
 
   const handleNumberInput = (value: string) => {
     const parsedValue = parseInt(value, 10);
-    return parsedValue > 0 ? parsedValue : "";
+    return isNaN(parsedValue) || parsedValue <= 0 ? 0 : parsedValue;
   };
 
   const formatDateInput = (date: Date) => {

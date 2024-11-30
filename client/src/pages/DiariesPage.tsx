@@ -1,11 +1,28 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect } from "react";
 import DiaryCard from "../components/DiaryCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDiaries } from "../features/diarySlice";
 import { AppDispatch, RootState } from "../store/store";
 import Pagination from "../components/Pagination";
-import { CgCloseR } from "react-icons/cg";
 import { Filters } from "../types/diary";
+import EditForm from "../components/EditForm";
+import EmptyDiaryPage from "../components/EmptyDiaryPage";
+import { FaTimes } from "react-icons/fa";
+
+interface Diary {
+  _id: string;
+  date: Date;
+  caloriesIntake: number;
+  energyLevel: number;
+  vitaminsTaken: boolean;
+  mood: string;
+  exerciseTime: number;
+  sleepQuality: number;
+  waterIntake: number;
+  notes: string;
+  walkTime: number;
+  stressLevel: number;
+}
 
 const DiariesPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -13,6 +30,8 @@ const DiariesPage: React.FC = () => {
     (state: RootState) => state.diary
   );
 
+  const [edit, setEdit] = useState(false);
+  const [diaryToEdit, setDiaryToEdit] = useState<Diary | null>(null);
   const [openFilter, setOpenFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("date");
@@ -20,10 +39,10 @@ const DiariesPage: React.FC = () => {
   const [filters, setFilters] = useState({
     mood: "",
     energyLevel: 0,
-    caloriesIntake: "",
-    waterIntake: "",
-    exerciseTime: "",
-    walkTime: "",
+    caloriesIntake: 0,
+    waterIntake: 0,
+    exerciseTime: 0,
+    walkTime: 0,
     sleepQuality: 0,
     stressLevel: 0,
     startDate: "",
@@ -52,43 +71,45 @@ const DiariesPage: React.FC = () => {
   };
 
   const toggleSortOrder = () => {
-    setOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc")); // Toggle ascending/descending
+    setOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
-  };
-
-  const handleGetFilteredDiary = () => {
+  const handleGetFilteredDiary = (filter: Filters) => {
     setPage(1);
+    const transformedFilters: Record<string, string | number | Date> =
+      Object.fromEntries(
+        Object.entries(filter).filter(
+          ([, value]) =>
+            value !== undefined &&
+            value !== null &&
+            (typeof value === "string" ||
+              typeof value === "number" ||
+              value instanceof Date)
+        )
+      );
     dispatch(
       fetchDiaries({
         page,
         sort: `${order === "desc" ? "-" : ""}${sort}`,
-        filters,
+        filters: transformedFilters,
       })
     );
   };
 
   const handleFilterReset = () => {
-    setSort("date");
-    setOrder("desc");
-    setPage(1);
     setFilters({
       mood: "",
       energyLevel: 0,
-      caloriesIntake: "",
-      waterIntake: "",
-      exerciseTime: "",
-      walkTime: "",
+      caloriesIntake: 0,
+      waterIntake: 0,
+      exerciseTime: 0,
+      walkTime: 0,
       sleepQuality: 0,
       stressLevel: 0,
       startDate: "",
       endDate: "",
     });
+    setPage(1);
 
     dispatch(
       fetchDiaries({
@@ -99,64 +120,85 @@ const DiariesPage: React.FC = () => {
     );
   };
 
-  const handleOpenFilter = () => {
+  const handleCloseFilter = () => {
+    setFilters({
+      mood: "",
+      energyLevel: 0,
+      caloriesIntake: 0,
+      waterIntake: 0,
+      exerciseTime: 0,
+      walkTime: 0,
+      sleepQuality: 0,
+      stressLevel: 0,
+      startDate: "",
+      endDate: "",
+    });
     setOpenFilters(false);
   };
 
+  const handlCloseEditModal = (status: boolean) => {
+    setEdit(status);
+  };
+
+  const handleOpenEditModal = (diary: Diary, status: boolean) => {
+    setDiaryToEdit(diary);
+    setEdit(status);
+  };
+
   return (
-    <div
-      className="grow container mx-auto px-4 py-8 relative"
-      onClick={() => setOpenFilters(false)}
-    >
+    <div className="grow container flex flex-col items-center relative md:p-6 p-3">
+      <EditForm diary={diaryToEdit} show={edit} onEdit={handlCloseEditModal} />
       {/* Filters Section */}
+
       <DiaryFilter
-        filterChange={handleFilterChange} // Type '(e: React.ChangeEvent<HTMLInputElement>) => void' is not assignable to type '(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void'.
-        openFilterBox={handleOpenFilter}
-        filters={filters} // Type '{}' is missing the following properties from type 'Filters': mood, energyLevel, caloriesIntake, waterIntake, and 6 more
+        openFilterBox={handleCloseFilter}
+        filters={filters}
         checkOpenFilter={openFilter}
         handleGetFilterDiary={handleGetFilteredDiary}
       />
 
-      <div className="flex items-center flex-col-reverse md:flex-row gap-6 justify-between py-6 mb-6">
-        <p className="text-xl font-bold text-white">
-          Total Diaries:{" "}
-          <span className="text-primary text-3xl">{totalDiaries}</span>
-        </p>
-        {/* Filter and Sorting Section */}
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() => setOpenFilters(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Filters
-          </button>
-          <button
-            onClick={() => handleFilterReset()}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Reset filters
-          </button>
-          <select
-            value={sort}
-            onChange={handleSortChange}
-            className="border p-2 rounded"
-          >
-            <option value="date">Sort by Date</option>
-            <option value="mood">Sort by Mood</option>
-            <option value="energyLevel">Sort by Energy Level</option>
-            <option value="title">Sort by Title</option>
-            <option value="createdBy">Sort by Author</option>
-          </select>
-          <button
-            onClick={toggleSortOrder}
-            className={`px-4 py-2 rounded ${
-              order === "asc" ? "bg-green-500" : "bg-red-500"
-            } text-white`}
-          >
-            {order === "asc" ? "Ascending" : "Descending"}
-          </button>
+      {
+        <div className="flex items-center w-full flex-col-reverse md:flex-row gap-6 justify-between py-6 mb-6">
+          <p className="text-xl font-bold text-white">
+            Total Diaries:{" "}
+            <span className="text-primary text-3xl">{totalDiaries}</span>
+          </p>
+          {/* Filter and Sorting Section */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setOpenFilters(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Filters
+            </button>
+            <button
+              onClick={() => handleFilterReset()}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Reset filters
+            </button>
+            <select
+              value={sort}
+              onChange={handleSortChange}
+              className="border p-2 rounded"
+            >
+              <option value="date">Sort by Date</option>
+              <option value="mood">Sort by Mood</option>
+              <option value="energyLevel">Sort by Energy Level</option>
+              <option value="title">Sort by Title</option>
+              <option value="createdBy">Sort by Author</option>
+            </select>
+            <button
+              onClick={toggleSortOrder}
+              className={`px-4 py-2 rounded ${
+                order === "asc" ? "bg-green-500" : "bg-red-500"
+              } text-white`}
+            >
+              {order === "asc" ? "Ascending" : "Descending"}
+            </button>
+          </div>
         </div>
-      </div>
+      }
 
       {/* Diaries Section */}
       {loading ? (
@@ -184,13 +226,15 @@ const DiariesPage: React.FC = () => {
         </div>
       ) : error ? (
         <p className="text-red-500 text-4xl font-semibold">{error}</p>
+      ) : diaries.length === 0 ? (
+        <EmptyDiaryPage />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full">
           {diaries.map((diary, index) => (
             <DiaryCard
-              index={index}
-              key={`${diary.mood}-${diary.energyLevel}-${index}`}
               diary={diary}
+              onEdit={handleOpenEditModal}
+              key={`${diary.mood}-${diary.energyLevel}-${index}`}
             />
           ))}
         </div>
@@ -210,20 +254,28 @@ const DiariesPage: React.FC = () => {
 export default DiariesPage;
 
 interface DiaryFilterProps {
-  filterChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  // filterChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   openFilterBox: () => void;
   filters: Filters;
   checkOpenFilter: boolean;
-  handleGetFilterDiary: () => void;
+  handleGetFilterDiary: (filter: Filters) => void;
 }
 
 const DiaryFilter: React.FC<DiaryFilterProps> = ({
-  filterChange,
   openFilterBox,
   filters,
   checkOpenFilter,
   handleGetFilterDiary,
 }) => {
+  const [filter, setFilter] = useState(filters);
+
+  const handleFilterChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFilter((prevFilters) => ({ ...prevFilters, [name]: value }));
+  };
+
   return (
     <div
       className={`bg-orange-200 p-4 shadow-md rounded-md mb-6 bg-opacity-50 backdrop-blur-sm fixed top-20 left-0 right-0 m-auto z-50 container ${
@@ -233,7 +285,7 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-medium mb-4">Filters</h2>
         <button onClick={() => openFilterBox()}>
-          <CgCloseR className="bg-black text-white text-xl" />
+          <FaTimes className="text-2xl" />
         </button>
       </div>
 
@@ -249,8 +301,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           </label>
           <select
             name="mood"
-            value={filters.mood}
-            onChange={filterChange}
+            value={filter.mood}
+            onChange={handleFilterChange}
             className="border p-2 rounded w-full"
           >
             <option value="">Select Mood</option>
@@ -258,7 +310,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
             <option value="sad">Sad</option>
             <option value="neutral">Neutral</option>
             <option value="excited">Excited</option>
-            <option value="angry">Angry</option>
+            <option value="anxious">Anxious</option>
+            <option value="tired">Tired</option>
           </select>
         </div>
 
@@ -273,14 +326,14 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="range"
             name="energyLevel"
-            value={filters.energyLevel}
-            onChange={filterChange}
-            min="0"
+            value={filter.energyLevel}
+            onChange={handleFilterChange}
+            min="1"
             max="10"
             className="w-full"
           />
           <p className="text-sm text-gray-600 mt-1">
-            Current: {filters.energyLevel}
+            Current: {filter.energyLevel}
           </p>
         </div>
 
@@ -295,8 +348,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="number"
             name="caloriesIntake"
-            value={filters.caloriesIntake}
-            onChange={filterChange}
+            value={filter.caloriesIntake}
+            onChange={handleFilterChange}
             placeholder="Enter calories"
             className="border p-2 rounded w-full"
           />
@@ -313,8 +366,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="number"
             name="waterIntake"
-            value={filters.waterIntake}
-            onChange={filterChange}
+            value={filter.waterIntake}
+            onChange={handleFilterChange}
             placeholder="Enter water intake"
             className="border p-2 rounded w-full"
           />
@@ -331,8 +384,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="number"
             name="exerciseTime"
-            value={filters.exerciseTime}
-            onChange={filterChange}
+            value={filter.exerciseTime}
+            onChange={handleFilterChange}
             placeholder="Enter exercise time"
             className="border p-2 rounded w-full"
           />
@@ -349,8 +402,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="number"
             name="walkTime"
-            value={filters.walkTime}
-            onChange={filterChange}
+            value={filter.walkTime}
+            onChange={handleFilterChange}
             placeholder="Enter walk time"
             className="border p-2 rounded w-full"
           />
@@ -367,14 +420,14 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="range"
             name="sleepQuality"
-            value={filters.sleepQuality}
-            onChange={filterChange}
-            min="0"
+            value={filter.sleepQuality}
+            onChange={handleFilterChange}
+            min="1"
             max="10"
             className="w-full"
           />
           <p className="text-sm text-gray-600 mt-1">
-            Current: {filters.sleepQuality}
+            Current: {filter.sleepQuality}
           </p>
         </div>
 
@@ -389,14 +442,14 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="range"
             name="stressLevel"
-            value={filters.stressLevel}
-            onChange={filterChange}
-            min="0"
+            value={filter.stressLevel}
+            onChange={handleFilterChange}
+            min="1"
             max="10"
             className="w-full"
           />
           <p className="text-sm text-gray-600 mt-1">
-            Current: {filters.stressLevel}
+            Current: {filter.stressLevel}
           </p>
         </div>
 
@@ -411,8 +464,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="date"
             name="startDate"
-            value={filters.startDate}
-            onChange={filterChange}
+            value={filter.startDate}
+            onChange={handleFilterChange}
             className="border p-2 rounded w-full"
           />
         </div>
@@ -426,8 +479,8 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
           <input
             type="date"
             name="endDate"
-            value={filters.endDate}
-            onChange={filterChange}
+            value={filter.endDate}
+            onChange={handleFilterChange}
             className="border p-2 rounded w-full"
           />
         </div>
@@ -436,7 +489,7 @@ const DiaryFilter: React.FC<DiaryFilterProps> = ({
       {/* Apply Filters Button */}
       <div className="mt-4">
         <button
-          onClick={() => handleGetFilterDiary()}
+          onClick={() => handleGetFilterDiary(filter)}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Apply Filters

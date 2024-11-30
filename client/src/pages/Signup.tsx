@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSignup } from "../hooks/useSignup";
-import toast from "react-hot-toast";
 
 const Signup: React.FC = () => {
   const { loading, signup, error } = useSignup();
@@ -51,25 +50,18 @@ const Signup: React.FC = () => {
     }
 
     await signup({ firstname, lastname, email, password });
-
     if (error) {
-      toast.error(error);
+      console.error(error);
     }
-    console.log({ firstname, lastname, email, password });
   };
 
   return (
-    <div
-      className="grow w-full flex justify-center items-center py-14 bg-cover bg-center"
-      style={{
-        backgroundImage: `url('/login-bg.jpg')`,
-      }}
-    >
+    <div className="grow w-full flex justify-center items-center py-14 bg-cover bg-center">
       <div className="w-full max-w-sm p-6 bg-white bg-opacity-5 backdrop-blur-md rounded-lg shadow-md">
         <h2 className="text-center text-3xl font-bold text-white mb-6 drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.3)]">
           Create an Account
         </h2>
-        <form className="space-y-6" onSubmit={handleSignupSubmit}>
+        <form className="" onSubmit={handleSignupSubmit}>
           {/* Full Name Field */}
           <div className="form-control">
             <label className="label">
@@ -82,7 +74,9 @@ const Signup: React.FC = () => {
               onChange={(e) => setFirstname(e.target.value)}
               className="input input-bordered w-full bg-white bg-opacity-50 text-gray-800 placeholder:text-gray-600"
             />
-            {errors.firstName && <p>{errors.firstName}</p>}
+            {errors.firstName && (
+              <p className="text-error">{errors.firstName}</p>
+            )}
           </div>
 
           {/* Last Name Field */}
@@ -97,7 +91,7 @@ const Signup: React.FC = () => {
               onChange={(e) => setLastname(e.target.value)}
               className="input input-bordered w-full bg-white bg-opacity-50 text-gray-800 placeholder:text-gray-600"
             />
-            {errors.lastname && <p>{errors.lastname}</p>}
+            {errors.lastname && <p className="text-error">{errors.lastname}</p>}
           </div>
 
           {/* Email Field */}
@@ -112,7 +106,7 @@ const Signup: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="input input-bordered w-full bg-white bg-opacity-50 text-gray-800 placeholder:text-gray-600"
             />
-            {errors.email && <p>{errors.email}</p>}
+            {errors.email && <p className="text-error">{errors.email}</p>}
           </div>
 
           {/* Password Field */}
@@ -127,13 +121,13 @@ const Signup: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="input input-bordered w-full bg-white bg-opacity-50 text-gray-800 placeholder:text-gray-600"
             />
-            {errors.password && <p>{errors.password}</p>}
+            {errors.password && <p className="text-error">{errors.password}</p>}
           </div>
 
           {/* Sign Up Button */}
           <button
             type="submit"
-            className="btn btn-block btn-primary text-white font-bold"
+            className="btn btn-block btn-primary text-white font-bold mt-6"
             disabled={loading}
           >
             {loading ? "Signing Up" : "Sign Up"}

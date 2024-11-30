@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useAuthContext } from "./useAuthContext";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 interface SignupCredentials {
   firstname: string;
@@ -9,9 +10,9 @@ interface SignupCredentials {
 }
 
 export const useSignup = () => {
-  const { setAuthUser } = useAuthContext();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const signup = async (credentials: SignupCredentials) => {
     setLoading(true);
@@ -28,16 +29,14 @@ export const useSignup = () => {
 
       if (!response.ok) {
         const { message } = await response.json();
+        toast.error(message);
         throw new Error(message || "Failed to register user.");
       }
 
-      const user = await response.json();
+      const data = await response.json();
 
-      // Set the authenticated user in the context
-      setAuthUser(user);
-
-      // Save the user to localStorage for persistence
-      localStorage.setItem("authUser", JSON.stringify(user));
+      toast.success(data.message);
+      navigate("/auth/login");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

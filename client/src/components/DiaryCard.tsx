@@ -1,9 +1,12 @@
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store"; // Adjust the import based on your store setup
+import { deleteDiary } from "../features/diarySlice";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { Diary } from "../types/diary";
 
-// Props type
 interface DiaryCardProps {
   diary: Diary;
-  index: number;
+  onEdit: (diary: Diary, status: boolean) => void; // Callback for handling edit
 }
 
 // Helper function to format the date
@@ -19,25 +22,49 @@ const formatDate = (date: Date) => {
   return { day, month, year, time };
 };
 
-const DiaryCard: React.FC<DiaryCardProps> = ({ diary }) => {
+const DiaryCard: React.FC<DiaryCardProps> = ({ diary, onEdit }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading } = useSelector((state: RootState) => state.diary);
   const { day, month, year, time } = formatDate(new Date(diary.date));
+
+  // Handle delete action
+  const handleDelete = () => {
+    if (confirm("Are you sure you want to delete this diary?")) {
+      dispatch(deleteDiary(diary._id));
+    }
+  };
+
   return (
-    <div className="bg-orange-200 bg-opacity-70 backdrop-blur-sm border border-orange-200 rounded-xl shadow-xl overflow-hidden">
+    <div className="bg-orange-200 bg-opacity-70 h-[570px] backdrop-blur-sm border border-orange-200 rounded-xl shadow-xl overflow-hidden">
       {/* Date Section */}
       <div className="flex items-center justify-between bg-white bg-opacity-20 backdrop-blur-3xl m-6 rounded-lg px-4 py-6 overflow-hidden">
         <div className="text-primary font-bold">
           <span className="text-6xl leading-none drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]">
             {day}
           </span>
-          <span className="text-sm mt-1 text-gray-700">
-            &nbsp; {month} {year}, {time}
+          <span className="text-sm text-gray-700">
+            &nbsp; {month} {year}
+            <br />
+            &nbsp; {time}
           </span>
         </div>
-        <div className="flex flex-col items-center gap-1">
-          {/* <div className="text-sm font-bold text-primary drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]">
-            Mood:
-          </div> */}
-          <div className="h-full justify-self-end badge badge-lg badge-accent">{diary.mood}</div>
+        <div className="flex flex-col-reverse items-center gap-4">
+          <div className="badge badge-lg badge-accent">{diary.mood}</div>
+          <div className="absolute bottom-4 right-4 flex gap-2">
+            <button
+              onClick={() => onEdit(diary, true)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <FaEdit size={20} />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="text-red-500 hover:text-red-700"
+              disabled={loading}
+            >
+              {loading ? "..." : <FaTrash size={20} />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -74,9 +101,9 @@ const DiaryCard: React.FC<DiaryCardProps> = ({ diary }) => {
       </div>
 
       {/* Notes Section */}
-      <div className="mt-4 bg-gray-100 bg-opacity-25 backdrop-blur-2xl p-4 rounded-lg mx-6 mb-6">
+      <div className="absolute bottom-0 left-0 h-28 w-[calc(100%-48px)] cursor-pointer bg-gray-100 bg-opacity-25 backdrop-blur-3xl p-4 rounded-lg mx-6 mb-6 hover:overflow-y-scroll overflow-y-hidden hover:absolute hover:bottom-0 hover:h-[370px] hover:bg-opacity-80 hover:bg-orange-100 transition-all duration-500 scrollbar">
         <h4 className="font-semibold text-gray-700 mb-2">Notes:</h4>
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-gray-700 whitespace-pre-wrap">
           {diary.notes || "No additional notes provided."}
         </p>
       </div>

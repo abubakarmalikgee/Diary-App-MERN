@@ -1,98 +1,121 @@
 import React, { useState } from "react";
-import { FaList, FaUserCircle } from "react-icons/fa";
+import { FaBars, FaTimes, FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 const Navbar: React.FC = () => {
   const { authUser } = useAuthContext();
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-primary text-secondary shadow-md sticky top-0 z-50">
+    <nav className="w-full bg-orange-200 bg-opacity-25 backdrop-blur-sm text-white sticky top-0 z-50 shadow-lg">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold tracking-wide">
-              My<span className="text-white">Diary</span>
-            </Link>
+          <Link to="/" className="text-2xl font-bold tracking-wide">
+            My<span className="text-yellow-300">Diary</span>
+          </Link>
+
+          {/* Desktop Links */}
+          <div className="hidden md:flex space-x-8">
+            {!authUser ? (
+              <>
+                <Link
+                  to="/auth/login"
+                  className="hover:underline hover:text-yellow-300 transition duration-200"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/auth/signup"
+                  className="hover:underline hover:text-yellow-300 transition duration-200"
+                >
+                  Sign Up
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/diaries"
+                  className="hover:underline hover:text-yellow-300 transition duration-200"
+                >
+                  Diaries
+                </Link>
+                <Link
+                  to="/diary/log"
+                  className="hover:underline hover:text-yellow-300 transition duration-200"
+                >
+                  New Diary
+                </Link>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 hover:underline hover:text-yellow-300 transition duration-200"
+                >
+                  <FaUserCircle className="text-2xl" />
+                  Profile
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* Navigation Links (Large screens) */}
-          {!authUser ? (
-            <div className="flex items-center space-x-6">
-              <Link
-                to="/auth/login"
-                className="hover:underline hover:text-gray-200 transition-all"
-              >
-                Login
-              </Link>
-              <Link
-                to="/auth/signup"
-                className="hover:underline hover:text-gray-200 transition-all"
-              >
-                Sign Up
-              </Link>
-            </div>
-          ) : (
-            <div className="hidden md:flex items-center space-x-6">
-              <Link
-                to="/diaries"
-                className="hover:underline hover:text-gray-200 transition-all"
-              >
-                Diaries
-              </Link>
-              <Link
-                to="/diary/log"
-                className="hover:underline hover:text-gray-200 transition-all"
-              >
-                New Diary
-              </Link>
-              <Link
-                to="/profile"
-                className="hover:underline hover:text-gray-200 transition-all flex items-center gap-2"
-              >
-                Profile
-                <FaUserCircle className="text-3xl" />
-              </Link>
-            </div>
-          )}
-
-          {/* Menu Icon (Small screens) */}
-          {authUser && (
-            <div className="flex md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-secondary hover:text-gray-200 focus:outline-none"
-              >
-                <FaList />
-              </button>
-            </div>
-          )}
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white hover:text-yellow-300 focus:outline-none"
+            >
+              {isMenuOpen ? (
+                <FaTimes className="text-2xl" />
+              ) : (
+                <FaBars className="text-2xl" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {authUser && isMenuOpen && (
-        <div className="md:hidden bg-white text-primary px-4 py-3 shadow-md">
+      {isMenuOpen && authUser && (
+        <div className="md:hidden bg-black bg-opacity-35 text-white py-4 shadow-lg">
           <Link
             to="/diaries"
-            className="block py-2 hover:bg-primary hover:text-white rounded-md transition-all"
+            className="block py-3 px-3 hover:bg-primary bg-opacity-30 rounded-md transition duration-200"
+            onClick={() => setIsMenuOpen(false)}
           >
             Diaries
           </Link>
           <Link
             to="/diary/log"
-            className="block py-2 hover:bg-primary hover:text-white rounded-md transition-all"
+            className="block py-3 px-3 hover:bg-primary bg-opacity-30 rounded-md transition duration-200"
+            onClick={() => setIsMenuOpen(false)}
           >
             New Diary
           </Link>
           <Link
             to="/profile"
-            className="block py-2 hover:bg-primary hover:text-white rounded-md transition-all"
+            className="block py-3 px-3 hover:bg-primary bg-opacity-30 rounded-md transition duration-200"
+            onClick={() => setIsMenuOpen(false)}
           >
             Profile
+          </Link>
+        </div>
+      )}
+
+      {!authUser && isMenuOpen && (
+        <div className="md:hidden bg-black bg-opacity-35 text-white py-4 shadow-lg">
+          <Link
+            to="/auth/login"
+            className="block py-3 px-3 hover:bg-primary bg-opacity-30 rounded-md transition duration-200"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Login
+          </Link>
+          <Link
+            to="/auth/signup"
+            className="block py-3 px-3 hover:bg-primary bg-opacity-30 rounded-md transition duration-200"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Sign Up
           </Link>
         </div>
       )}

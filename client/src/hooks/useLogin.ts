@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "./useAuthContext";
+import toast from "react-hot-toast";
 
 interface LoginCredentials {
   email: string;
@@ -26,16 +27,14 @@ export const useLogin = () => {
 
       if (!response.ok) {
         const { message } = await response.json();
+        toast.error(message);
         throw new Error(message || "Failed to log in.");
       }
 
-      const user = await response.json();
-
-      // Set the authenticated user in the context
-      setAuthUser(user);
-
-      // Save the user to localStorage for persistence
-      localStorage.setItem("authUser", JSON.stringify(user));
+      const { message, data } = await response.json();
+      localStorage.setItem("authUser", JSON.stringify(data));
+      setAuthUser(data);
+      toast.success(message);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

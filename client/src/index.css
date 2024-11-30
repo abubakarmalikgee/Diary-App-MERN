@@ -2,10 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-    scrollbar-width: thin !important;
+html,
+body {
+  scrollbar-width: thin !important;
+  scrollbar-color: #fbb42f #f1f1f1 !important;
 }
 
-.scrollbar{
-    scrollbar-width: thin;
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ffba3a #f1f1f1;
 }

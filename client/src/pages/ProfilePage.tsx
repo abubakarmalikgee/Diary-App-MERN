@@ -1,16 +1,15 @@
 import React from "react";
 import { useGetProfile } from "../hooks/useGetProfile";
 import { useLogout } from "../hooks/useLogout";
+import { BiLogOut } from "react-icons/bi";
 
 const ProfilePage: React.FC = () => {
   const { profile, loading, error } = useGetProfile();
   const { logout } = useLogout();
 
-  console.log(profile);
-
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <div className="w-full flex flex-col items-center justify-center h-screen bg-gray-100">
         <h1 className="text-2xl font-semibold text-gray-800">Loading...</h1>
       </div>
     );
@@ -18,7 +17,7 @@ const ProfilePage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <div className="w-full flex flex-col items-center justify-center h-screen bg-gray-100">
         <h1 className="text-2xl font-semibold text-red-600">{error}</h1>
       </div>
     );
@@ -26,7 +25,7 @@ const ProfilePage: React.FC = () => {
 
   if (!profile) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <div className="w-full flex flex-col items-center justify-center h-screen bg-gray-100">
         <h1 className="text-2xl font-semibold text-gray-800">
           Please log in to view your profile.
         </h1>
@@ -36,10 +35,7 @@ const ProfilePage: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    console.log("User logged out");
   };
-
-  console.log(profile.since);
 
   const joinedDate = new Date(profile.since).toLocaleDateString("en-US", {
     year: "numeric",
@@ -48,7 +44,7 @@ const ProfilePage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
+    <div className="w-full min-h-screen bg-gray-100 py-10">
       <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
         {/* Header Section */}
         <div className="flex items-center space-x-6 border-b pb-6">
@@ -74,8 +70,7 @@ const ProfilePage: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-800">About Me</h3>
           <p className="text-gray-600 mt-2">
             Hi, I'm {profile.firstname}! I use this app to track my daily
-            habits, manage my wellness, and improve my lifestyle. This space can
-            include custom user content or a short description about them.
+            habits, manage my wellness, and improve my lifestyle.
           </p>
         </div>
 
@@ -83,9 +78,9 @@ const ProfilePage: React.FC = () => {
         <div className="mt-6 text-right">
           <button
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 focus:outline-none"
+            className="bg-red-500 flex gap-2 items-center text-white pr-4 py-2 pl-3 rounded-lg shadow hover:bg-red-600 focus:outline-none"
           >
-            Logout
+            <BiLogOut /> Logout
           </button>
         </div>
       </div>

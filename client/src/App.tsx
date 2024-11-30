@@ -19,12 +19,7 @@ function App() {
   const { authUser } = useAuthContext();
 
   return (
-    <main
-      className="relative flex flex-col min-h-screen w-full overflow-hidden bg-cover bg-center top-0 before:bg-[url('/login-bg.jpg')] before:bg-cover before:bg-center before:bg-no-repeat before:fixed before:top-0 before:left-0 before:w-full before:h-screen before:-z-10"
-      // style={{
-      //   backgroundImage: `url('/login-bg.jpg')`,
-      // }}
-    >
+    <main className="relative flex flex-col items-center min-h-screen w-full overflow-hidden bg-cover bg-center top-0 before:bg-[url('/bg.jpg')] before:bg-cover before:bg-center before:bg-no-repeat before:fixed before:top-0 before:left-0 before:w-full before:h-screen before:-z-10">
       <Router>
         <Navbar />
         <Routes>
@@ -32,19 +27,11 @@ function App() {
             path="/"
             element={
               authUser ? (
-                <Navigate to={"/profile"} />
+                <Navigate to={"/profile"} replace />
               ) : (
-                <Navigate to={"/auth/login"} />
+                <Navigate to={"/auth/login"} replace />
               )
             }
-          />
-          <Route
-            path="/auth/signup"
-            element={authUser ? <Navigate to={"/diaries"} /> : <Signup />}
-          />
-          <Route
-            path="/auth/login"
-            element={authUser ? <Navigate to={"/diaries"} /> : <Login />}
           />
           <Route
             path="/profile"
@@ -62,16 +49,14 @@ function App() {
               authUser ? <DiariesPage /> : <Navigate to={"/auth/login"} />
             }
           />
-          {/* <Route
-            path="/*"
-            element={
-              authUser ? (
-                <Navigate to={"/diaries"} />
-              ) : (
-                <Navigate to={"/auth/login"} />
-              )
-            }
-          /> */}
+          <Route
+            path="/auth/signup"
+            element={authUser ? <Navigate to={"/diaries"} /> : <Signup />}
+          />
+          <Route
+            path="/auth/login"
+            element={authUser ? <Navigate to={"/diaries"} /> : <Login />}
+          />
         </Routes>
         <Footer />
       </Router>

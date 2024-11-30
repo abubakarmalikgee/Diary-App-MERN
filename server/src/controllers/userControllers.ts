@@ -20,7 +20,7 @@ export const registerUser = asyncHandler(
     }
 
     // Create new user
-    const user = await User.create({
+    await User.create({
       name: `${firstname.trim()} ${lastname}`,
       firstname,
       lastname,

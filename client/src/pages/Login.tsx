@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin";
-import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
-  const { loading, login, error } = useLogin();
+  const { loading, login } = useLogin();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -35,27 +34,17 @@ const Login: React.FC = () => {
     }
 
     await login({ email, password });
-
-    if (error) {
-      toast.error(error);
-    }
-
-    // Login logic here
-    console.log({ email, password });
   };
 
   return (
     <div
       className="grow w-full flex justify-center items-center py-14 bg-cover bg-center placeholder:text-gray-600"
-      style={{
-        backgroundImage: `url('/login-bg.jpg')`,
-      }}
     >
       <div className="w-full max-w-sm p-6 bg-white bg-opacity-5 backdrop-blur-md rounded-lg shadow-md">
         <h2 className="text-center text-3xl font-bold text-white mb-6">
           Welcome Back
         </h2>
-        <form className="space-y-6" onSubmit={handleLoginSubmit}>
+        <form className="" onSubmit={handleLoginSubmit}>
           {/* Email Field */}
           <div className="form-control">
             <label className="label">
@@ -89,7 +78,7 @@ const Login: React.FC = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="btn btn-block btn-primary text-white font-bold"
+            className="btn btn-block btn-primary text-white font-bold mt-6"
             disabled={loading}
           >
             {loading ? "Logging In" : "Login"}

@@ -34,10 +34,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Fetch user data from the server on initial load
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        // Set loading to true while fetching
-        setLoading(true);
+      setLoading(true);
 
+      // First, try to get the user from localStorage
+      const storedUser = localStorage.getItem("authUser");
+
+      if (storedUser) {
+        // If user is found in localStorage, set it to state
+        setAuthUser(JSON.parse(storedUser));
+        setLoading(false);
+        return; // Skip the API call if the user is already in localStorage
+      }
+
+      try {
         // Call your server to verify the current user
         const response = await fetch("/api/v1/user/me", {
           method: "GET",
@@ -46,16 +55,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (response.ok) {
           const user = await response.json();
-          setAuthUser(user.data); // Update context with fetched user
+          setAuthUser(user.data);
+
+          // Save the user data in localStorage for future use
+          localStorage.setItem("authUser", JSON.stringify(user.data));
         } else {
-          setAuthUser(null); // Clear authUser if not authenticated
-          localStorage.removeItem("authUser"); // Remove stale user from localStorage
+          setAuthUser(null); // No user found in API response
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);
         setAuthUser(null);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
 
