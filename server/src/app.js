@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -6,11 +6,11 @@ import helmet from "helmet";
 import cors from "cors";
 
 // Import Routes
-import userRoute from "./routes/userRoutes";
-import diaryRoute from "./routes/diaryRoutes";
+import userRoute from "./routes/userRoutes.js";
+import diaryRoute from "./routes/diaryRoutes.js";
 
 // Import Middleware
-import errorMiddleware from "./middlewares/errorMiddleware";
+import errorMiddleware from "./middlewares/errorMiddleware.js";
 
 const app = express();
 

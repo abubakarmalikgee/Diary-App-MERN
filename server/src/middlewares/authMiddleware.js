@@ -1,13 +1,8 @@
-import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import User from "../models/userModel";
-import ErrorHandler from "../utils/errorHandler";
+import User from "../models/userModel.js";
+import ErrorHandler from "../utils/errorHandler.js";
 
-export const isAuthenticatedUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const isAuthenticatedUser = async (req, res, next) => {
   const { token } = req.cookies;
 
   if (!token) {
@@ -16,7 +11,7 @@ export const isAuthenticatedUser = async (
 
   try {
     // Decode the token
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
       new ErrorHandler("Invalid token, Unauthorized access", 401);

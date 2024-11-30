@@ -1,23 +1,7 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
-
-// Interface for Diary Document
-export interface IDiary extends Document {
-  user: mongoose.Types.ObjectId; // Reference to User
-  date: Date;
-  caloriesIntake: number;
-  energyLevel: number; // Range: 1-10
-  vitaminsTaken: boolean;
-  mood: "Happy" | "Sad" | "Neutral" | "Anxious" | "Excited" | "Tired";
-  exerciseTime: number; // In minutes
-  sleepQuality: number; // Range: 1-10
-  waterIntake?: number; // Optional, in liters
-  notes?: string; // Optional custom notes
-  walkTime?: number; // Optional, walking time in minutes
-  stressLevel?: number; // Optional, Range: 1-10
-}
+import mongoose, { Schema } from "mongoose";
 
 // Mongoose Schema for Diary
-const DiarySchema: Schema = new Schema<IDiary>(
+const DiarySchema = new Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -86,6 +70,6 @@ const DiarySchema: Schema = new Schema<IDiary>(
 );
 
 // Create and Export Diary Model
-const Diary: Model<IDiary> = mongoose.model<IDiary>("Diary", DiarySchema);
+const Diary = mongoose.model("Diary", DiarySchema);
 
 export default Diary;

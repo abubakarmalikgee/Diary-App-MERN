@@ -1,13 +1,6 @@
 import nodemailer from "nodemailer";
 
-// Interface for the options that the sendEmail function will receive
-interface EmailOptions {
-  email: string;
-  subject: string;
-  message: string;
-}
-
-const sendEmail = async (options: EmailOptions): Promise<void> => {
+const sendEmail = async (options) => {
   // Create a transporter for sending the email
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,

@@ -1,19 +1,11 @@
-import { Query } from "mongoose";
-
 export class ApiFeatures {
-  query: any;
-  queryStr: Record<string, string | string[] | undefined>;
-
-  constructor(
-    query: any,
-    queryStr: Record<string, string | string[] | undefined>
-  ) {
+  constructor(query, queryStr) {
     this.query = query;
     this.queryStr = queryStr;
   }
 
-  // Handle filter, pagination and sorting
-  public filter() {
+  // Handle filter, pagination, and sorting
+  filter() {
     const queryCopy = { ...this.queryStr };
 
     // Removing fields for pagination
@@ -35,13 +27,8 @@ export class ApiFeatures {
     if (queryCopy.startDate || queryCopy.endDate) {
       parsedQuery.date = {};
 
-      // Ensure values are strings before converting to Date
-      const startDate =
-        typeof queryCopy.startDate === "string"
-          ? queryCopy.startDate
-          : undefined;
-      const endDate =
-        typeof queryCopy.endDate === "string" ? queryCopy.endDate : undefined;
+      const startDate = queryCopy.startDate;
+      const endDate = queryCopy.endDate;
 
       if (startDate) {
         parsedQuery.date.$gte = new Date(`${startDate}T00:00:00.000Z`);
@@ -62,9 +49,9 @@ export class ApiFeatures {
   }
 
   // Handle sorting
-  public sort() {
+  sort() {
     if (this.queryStr && this.queryStr.sort) {
-      let sortBy: string;
+      let sortBy;
 
       if (Array.isArray(this.queryStr.sort)) {
         // If it's an array, join the array elements with a space
@@ -80,9 +67,9 @@ export class ApiFeatures {
   }
 
   // Handle pagination
-  public paginate() {
-    const page = parseInt(this.queryStr.page as string, 10) || 1;
-    const limit = parseInt(this.queryStr.limit as string, 10) || 10;
+  paginate() {
+    const page = parseInt(this.queryStr.page, 10) || 1;
+    const limit = parseInt(this.queryStr.limit, 10) || 10;
     const skip = (page - 1) * limit;
 
     this.query = this.query.skip(skip).limit(limit);

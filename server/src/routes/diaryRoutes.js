@@ -5,8 +5,8 @@ import {
   createDiary,
   updateDiary,
   deleteDiary,
-} from "../controllers/diaryControllers";
-import { isAuthenticatedUser } from "../middlewares/authMiddleware";
+} from "../controllers/diaryControllers.js";
+import { isAuthenticatedUser } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

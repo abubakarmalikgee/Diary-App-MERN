@@ -8,8 +8,8 @@ import {
   resetPassword,
   updatePassword,
   updateUserProfile,
-} from "../controllers/userControllers";
-import { isAuthenticatedUser } from "../middlewares/authMiddleware";
+} from "../controllers/userControllers.js";
+import { isAuthenticatedUser } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
