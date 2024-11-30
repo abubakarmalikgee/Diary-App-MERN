@@ -18,13 +18,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet()); // Basic security headers
 
-// app.use(
-//   cors({
-//     origin: ["https://diary-app-mern.vercel.app"],
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+    origin: ["https://diary-app-mern.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 // Logger Middleware
 app.use(morgan("combined")); // Use Apache combined format for detailed logs
