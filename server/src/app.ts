@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: ["https://diary-app-mern.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
