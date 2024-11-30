@@ -180,7 +180,9 @@ export const forgotPassword = asyncHandler(
     // const resetUrl = `${req.protocol}://${req.get(
     //   "host"
     // )}/api/v1/users/reset-password/${resetToken}`;
-    const resetUrl = `${process.env.DOMAIN}/auth/resetpassword?token=${resetToken}`;
+    const resetUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/auth/resetpassword?token=${resetToken}`;
 
     // Email content
     const message = `You are receiving this email because you (or someone else) have requested the reset of a password. 

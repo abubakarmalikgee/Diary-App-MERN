@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
+import path from "path";
 
 // Import Routes
 import userRoute from "./routes/userRoutes";
@@ -32,6 +33,11 @@ app.use(morgan("combined")); // Use Apache combined format for detailed logs
 // Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/diary", diaryRoute);
+
+app.use(express.static(path.join(__dirname, "../../client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../../client/dist/index.html"));
+});
 
 // Error Middleware
 app.use(errorMiddleware);
