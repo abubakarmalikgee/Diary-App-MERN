@@ -42,6 +42,7 @@ export const useSignup = () => {
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
+        toast.error(err.message);
       } else {
         setError("An unknown error occurred.");
       }
